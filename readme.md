@@ -1,9 +1,9 @@
-# KKTP - Kristian Thomas Transfer Protocol
+# KTTP - Kristian Thomas Transfer Protocol
 
 This repository contains the code and documentation for the Kristian Thomas Transfer Protocol (KKTP). KKTP is a simple binary protocol designed for efficiently transferring serialized data between two systems. The protocol aims to be straightforward to implement and use, while maintaining high performance and low overhead.
 
 ## Table of Contents
-- [KKTP - Kristian Thomas Transfer Protocol](#kktp---kristian-thomas-transfer-protocol)
+- [KTTP - Kristian Thomas Transfer Protocol](#kttp---kristian-thomas-transfer-protocol)
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Protocol Overview](#protocol-overview)
