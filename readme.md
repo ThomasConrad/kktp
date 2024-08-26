@@ -118,24 +118,24 @@ dish Lunch {
 
 services {
     1 : Dinner {
-        orders : Dinner,
-        receives : Dinner
+        request : Dinner,
+        response : Lunch
     }
 
     2 : Lunch {
         1 : Pasta {
-            orders : u32,
-            receives : u32
+            request : u32,
+            response : bool
         }
 
         2 : Salad {
-            orders : u32,
-            receives : u32
+            request : u32,
+            response : ? u32
         }
     }
 
     3 : TableBread {
-        receives : Bread
+        response : Bread
     }
 }
 ```
@@ -157,14 +157,13 @@ services {
 
 <services> ::= "services" "{" <service_definitions> "}"
 
-<service_definitions> ::= <service_definition> ("," <service_definition>)*
-<service_definition> ::= <service_id> ":" <identifier> "{" <service_fields> "}" | <nested_service>
-
-<nested_service> ::= <service_id> ":" <identifier> "{" (<service_field> | <nested_service>)* "}"
+<service_definitions> ::= (<service_definition>)*
+<service_definition> ::= <service_id> ":" <identifier> "{" <service_fields> | <service_definitions> "}" 
 
 <service_id> ::= <number>
-<service_fields> ::= <service_field> ("," <service_field>)*
-<service_field> ::= "orders" ":" <type> | "receives" ":" <type>
+<service_fields> ::= <request_field> | <response_field> | <request_field> "," <response_field>
+<request_field> ::= "request" ":" <type>
+<response_field> ::= "response" ":" <type>
 
 <type> ::= <primitive_type> | <array_type> | <enum_type> | <identifier> | <optional_type>
 <primitive_type> ::= "u8" | "u16" | "u32" | "u64" | "u16-raw" | "u32-raw" | "u64-raw" | "i8" | "i16" | "i32" | "i64" | "i16-raw" | "i32-raw" | "i64-raw" | "f32" | "f64" | "bool" | "string"
