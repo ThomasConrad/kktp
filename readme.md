@@ -15,8 +15,8 @@ This repository contains the code and documentation for the Kristian Thomas Tran
     - [Primitive Types](#primitive-types)
     - [Meta Types](#meta-types)
   - [Menu Format](#menu-format)
+    - [Writing menu types](#writing-menu-types)
     - [Example](#example-1)
-    - [Menu Format Grammar](#menu-format-grammar)
   - [Usage](#usage)
     - [Example of Encoding and Decoding](#example-of-encoding-and-decoding)
 
@@ -81,12 +81,18 @@ KKTP supports a variety of primitive types to provide flexibility in message des
 
 - **Variable Length Array**: Encoded as a `varint` length followed by `length` elements of the specified type.
 - **Fixed Length Array**: A specified `length` number of elements of the given type.
-- **Optional**: A `bool` indicating if the value is present (`true`), followed by the value if present.
+- **Optional**: A `bool` indicating if the value is present (`true`), followed by the value if present. This is equivalent to using an enum with two variants: `Some` and `None`. 
 - **Enum**: A `varint` indicating the variant, followed by the variant data.
+- **Dish**: A collection of fields, each with a specified type.
+- **Empty**: A placeholder for an empty value.
 
 ## Menu Format
 
 The KKTP protocol uses a non-self-describing format, meaning it relies on external definitions to understand message structures. The **menu format** is a simple textual description that outlines the structure of messages, including their fields and types. Menu files have the extension `.menu`, and are stored in plain text.
+
+### Writing menu types
+
+Primitive types are written as keywords, such as `u8`, `u16`, `u32`, `u64`, `i8`, `i16`, `i32`, `i64`, `f32`, `f64`, `bool`, and `string`. Arrays are defined using square brackets, such as `[u8]` for a byte array or `[u32; 4]` for a fixed-size array of 4 unsigned 32-bit integers. Enums are defined using the `enum` keyword, followed by the enum name and a list of variants. Dishes are defined using the `dish` keyword, followed by the dish name and a list of fields. Optional types are defined using the `?` symbol followed by the type. Empty types are defined using `()`.
 
 ### Example
 
@@ -94,8 +100,8 @@ Below is an example of a menu format that defines several messages and their str
 
 ```plaintext
 enum Rye {
-    sourdough : u32,
-    seeded : u16
+    sourdough : (),
+    seeded : ()
 }
 
 enum Bread {
@@ -135,46 +141,11 @@ services {
     }
 
     3 : TableBread {
+        request : (),
         response : Bread
     }
 }
 ```
-
-### Menu Format Grammar
-
-```bnf
-<grammar> ::= (<enum> | <dish> | <services>)*
-
-<enum> ::= "enum" <identifier> "{" <enum_fields> "}"
-
-<enum_fields> ::= <enum_field> ("," <enum_field>)*
-<enum_field> ::= <identifier> ":" <type>
-
-<dish> ::= "dish" <identifier> "{" <dish_fields> "}"
-
-<dish_fields> ::= <dish_field> ("," <dish_field>)*
-<dish_field> ::= <identifier> ":" <type>
-
-<services> ::= "services" "{" <service_definitions> "}"
-
-<service_definitions> ::= (<service_definition>)*
-<service_definition> ::= <service_id> ":" <identifier> "{" <service_fields> | <service_definitions> "}" 
-
-<service_id> ::= <number>
-<service_fields> ::= <request_field> | <response_field> | <request_field> "," <response_field>
-<request_field> ::= "request" ":" <type>
-<response_field> ::= "response" ":" <type>
-
-<type> ::= <primitive_type> | <array_type> | <enum_type> | <identifier> | <optional_type>
-<primitive_type> ::= "u8" | "u16" | "u32" | "u64" | "u16-raw" | "u32-raw" | "u64-raw" | "i8" | "i16" | "i32" | "i64" | "i16-raw" | "i32-raw" | "i64-raw" | "f32" | "f64" | "bool" | "string"
-<array_type> ::= "[" <type> "]" | "[" <type> ";" <number> "]"
-<optional_type> ::= "?" <type>
-<enum_type> ::= <identifier>
-
-<identifier> ::= [a-zA-Z_][a-zA-Z0-9_]*
-<number> ::= [0-9]+
-```
-
 ## Usage
 
 KKTP uses the menu format to define a collection of services. Each service is identified by a unique ID and specifies the messages it can send and receive. Dishes are used to define the structure of these messages. Each dish is a collection of fields, each with a specified type. Types can be primitive types, array types, enum types, or even other dishes.
