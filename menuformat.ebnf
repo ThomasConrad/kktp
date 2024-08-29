@@ -1,0 +1,65 @@
+menu          ::= (whitespace | newline | enum | dish | service | comment)*;
+
+comment       ::= "//" (whitespace | character)*;
+
+enum          ::= "enum" whitespace identifier whitespace "{" newline enum_variant_list "}" newline;
+enum_variant_list ::= (enum_variant ("," newline enum_variant)* newline)?;
+enum_variant  ::= whitespace identifier whitespace ":" whitespace type;
+
+dish          ::= "dish" whitespace identifier whitespace "{" newline field_list "}" newline;
+field_list    ::= (field ("," newline field)* newline)?;
+field         ::= whitespace identifier whitespace ":" whitespace type whitespace;
+
+service       ::= "services" whitespace "{" service_list "}";
+service_list  ::= newline (service_item (newline service_item)*)?;
+service_item  ::= whitespace service_id whitespace ":" whitespace identifier whitespace "{" service_list_item "}" newline;
+service_list_item ::= (request_response_list | service_list) newline? whitespace?;
+request_response_list ::= newline (request_response (newline request_response)*)?;
+request_response ::= whitespace "request" whitespace ":" whitespace type "," newline? whitespace "response" whitespace ":" whitespace type whitespace;
+
+type          ::= primitive_type
+                | array_type
+                | enum_type
+                | dish_type
+                | struct_type
+                | optional_type
+                | result_type
+                | empty_type;
+
+primitive_type ::= "u8" | "u16" | "u32" | "u64" 
+                  | "u16-raw" | "u32-raw" | "u64-raw"
+                  | "i8" | "i16" | "i32" | "i64"
+                  | "i16-raw" | "i32-raw" | "i64-raw"
+                  | "f32" | "f64" | "bool" | "string";
+
+array_type    ::= "[" whitespace type whitespace (";" whitespace integer)? "]";
+enum_type     ::= identifier;
+dish_type     ::= identifier;
+optional_type ::= "?" whitespace type;
+result_type   ::= "!" whitespace type ":" whitespace type;
+empty_type    ::= "()";
+struct_type   ::= whitespace identifier whitespace "{" newline field_list whitespace "}" ;
+
+identifier    ::= letter (letter | digit | "_")*;
+service_id    ::= digit+;
+integer       ::= digit+;
+letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
+       | "H" | "I" | "J" | "K" | "L" | "M" | "N"
+       | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+       | "V" | "W" | "X" | "Y" | "Z" | "a" | "b"
+       | "c" | "d" | "e" | "f" | "g" | "h" | "i"
+       | "j" | "k" | "l" | "m" | "n" | "o" | "p"
+       | "q" | "r" | "s" | "t" | "u" | "v" | "w"
+       | "x" | "y" | "z" ;
+
+digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+symbol = "[" | "]" | "{" | "}" | "(" | ")" | "<" | ">"
+       | "'" | '"' | "=" | "|" | "." | "," | ";" | "-" 
+       | "+" | "*" | "?" | "\n" | "\t" | "\r" | "\f" | "\b" ;
+
+character = letter | digit | symbol | "_" | " " ;
+identifier = letter , { letter | digit | "_" } ;
+
+
+whitespace    ::= (" " | "\t")*;
+newline       ::= whitespace? "\r"? comment? "\n";
